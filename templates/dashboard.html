@@ -1,50 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieFlix Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MovieFlix Dashboard</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static',filename='css/style.css') }}">
+
+<style>
+
+body{
+background:#141414;
+font-family:Arial,sans-serif;
+margin:0;
+padding:20px;
+color:white;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.movie-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:20px;
+}
+
+.movie-card{
+background:#222;
+border-radius:10px;
+overflow:hidden;
+transition:.3s;
+}
+
+.movie-card:hover{
+transform:scale(1.05);
+}
+
+.movie-card img{
+width:100%;
+height:300px;
+object-fit:cover;
+}
+
+.movie-info{
+padding:10px;
+}
+
+.movie-info h3{
+margin:5px 0;
+}
+
+.movie-info p{
+margin:5px 0;
+font-size:14px;
+color:#ccc;
+}
+
+.watch-btn{
+width:100%;
+padding:10px;
+border:none;
+background:red;
+color:white;
+cursor:pointer;
+}
+
+.logout{
+padding:10px 20px;
+background:red;
+color:white;
+text-decoration:none;
+border-radius:5px;
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div class="dashboard-page">
+<div class="topbar">
 
-    <!-- Navbar -->
-    <nav class="navbar">
-        <span class="brand">Movie<span>Flix</span></span>
-        <div class="nav-right">
-            <span class="nav-user">Hi, {{ user }}</span>
-            <button class="btn-logout" onclick="logout()">Logout</button>
-        </div>
-    </nav>
+<h1>
+Welcome {{ user }}
+</h1>
 
-    <!-- Category Filter -->
-    <div class="category-bar">
-        <button class="cat-btn active" onclick="showCategory('all', this)">All</button>
-        {% for cat in categories %}
-            <button class="cat-btn" onclick="showCategory('{{ cat }}', this)">{{ cat }}</button>
-        {% endfor %}
-    </div>
+<a href="/logout" class="logout">
+Logout
+</a>
 
-    <!-- Movie Sections grouped by genre -->
-    {% for cat in categories %}
-    <div class="movie-section" id="{{ cat }}">
-        <h2 class="section-title">{{ cat }}</h2>
-        <div class="movie-grid">
-            {% for movie in movies if movie.genre == cat %}
-            <a href="{{ url_for('movie', movie_id=movie.id) }}" class="movie-card">
-                <img src="{{ movie.image }}" alt="{{ movie.title }}" loading="lazy">
-                <div class="movie-card-info">
-                    <p class="movie-card-title">{{ movie.title }}</p>
-                    <p class="movie-card-meta">{{ movie.genre }} · {{ movie.language }}</p>
-                </div>
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-    {% endfor %}
+</div>
+
+<div class="movie-grid">
+
+{% for movie in movies %}
+
+<div class="movie-card">
+
+<img src="{{ movie.image }}"
+onerror="this.src='https://via.placeholder.com/300x450?text=MovieFlix'">
+
+<div class="movie-info">
+
+<h3>
+{{ movie.title }}
+</h3>
+
+<p>
+{{ movie.genre }}
+</p>
+
+<p>
+{{ movie.language }}
+</p>
+
+<a href="/movie/{{ movie.id }}">
+
+<button class="watch-btn">
+
+Watch
+
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+{% endfor %}
 
 </div>
 

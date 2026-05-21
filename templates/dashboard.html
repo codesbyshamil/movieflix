@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+
+<div class="dashboard-page">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <span class="brand">Movie<span>Flix</span></span>
+        <div class="nav-right">
+            <span class="nav-user">Hi, {{ user }}</span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Category Filter -->
+    <div class="category-bar">
+        <button class="cat-btn active" onclick="showCategory('all', this)">All</button>
+        {% for cat in categories %}
+            <button class="cat-btn" onclick="showCategory('{{ cat }}', this)">{{ cat }}</button>
+        {% endfor %}
+    </div>
+
+    <!-- Movie Sections grouped by genre -->
+    {% for cat in categories %}
+    <div class="movie-section" id="{{ cat }}">
+        <h2 class="section-title">{{ cat }}</h2>
+        <div class="movie-grid">
+            {% for movie in movies if movie.genre == cat %}
+            <a href="{{ url_for('movie', movie_id=movie.id) }}" class="movie-card">
+                <img src="{{ movie.image }}" alt="{{ movie.title }}" loading="lazy">
+                <div class="movie-card-info">
+                    <p class="movie-card-title">{{ movie.title }}</p>
+                    <p class="movie-card-meta">{{ movie.genre }} · {{ movie.language }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

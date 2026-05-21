@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix Premium</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="payment-page">
+    <div class="payment-container">
+
+        <h1 class="brand">Movie<span>Flix</span> <span class="premium-label">Premium</span></h1>
+
+        <p class="payment-text">
+            Subscribe now to watch unlimited movies and TV shows.
+        </p>
+
+        <div class="plans">
+
+            <div class="plan-card" onclick="selectPlan(this)">
+                <h2>Basic</h2>
+                <h3>₹199<span>/mo</span></h3>
+                <p>720p Streaming</p>
+                <ul>
+                    <li>1 screen at a time</li>
+                    <li>Ad-supported</li>
+                </ul>
+            </div>
+
+            <div class="plan-card featured" onclick="selectPlan(this)">
+                <span class="popular-badge">Most Popular</span>
+                <h2>Standard</h2>
+                <h3>₹499<span>/mo</span></h3>
+                <p>1080p Full HD</p>
+                <ul>
+                    <li>2 screens at a time</li>
+                    <li>Ad-free</li>
+                </ul>
+            </div>
+
+            <div class="plan-card" onclick="selectPlan(this)">
+                <h2>Premium</h2>
+                <h3>₹999<span>/mo</span></h3>
+                <p>4K Ultra HD</p>
+                <ul>
+                    <li>4 screens at a time</li>
+                    <li>Ad-free + Downloads</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <button class="btn-primary subscribe-btn" onclick="handlePayment()">
+            Continue Payment
+        </button>
+
+        <p id="pay-success" style="display:none;" class="success-msg">
+            ✅ Payment successful! Welcome to Premium.
+        </p>
+
+        <a href="{{ url_for('dashboard') }}">
+            <button class="btn-back" style="margin-top:12px;">← Back to Home</button>
+        </a>
+
+    </div>
+</div>
+
+<script>
+function selectPlan(el) {
+    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+}
+function handlePayment() {
+    document.querySelector('.subscribe-btn').style.display = 'none';
+    document.getElementById('pay-success').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

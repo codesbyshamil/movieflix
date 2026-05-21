@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.title }} – MovieFlix</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="movie-details-page">
+
+    <div class="movie-banner">
+        <img src="{{ movie.image }}" alt="{{ movie.title }}">
+        <div class="movie-banner-overlay"></div>
+    </div>
+
+    <div class="movie-content">
+
+        <h1>{{ movie.title }}</h1>
+
+        <p class="movie-meta">
+            {{ movie.genre }} &nbsp;|&nbsp; {{ movie.language }}
+        </p>
+
+        <p class="movie-summary">
+            One of the top trending titles on MovieFlix. Enjoy unlimited entertainment
+            with premium streaming quality and an immersive cinematic experience.
+        </p>
+
+        <h2>Cast</h2>
+        <p class="cast">{{ movie.cast }}</p>
+
+        <div class="movie-buttons">
+            <a href="{{ url_for('payment') }}">
+                <button class="btn-watch">▶ Watch Premium</button>
+            </a>
+            <a href="{{ url_for('dashboard') }}">
+                <button class="btn-back">← Back</button>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

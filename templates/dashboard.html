@@ -1,141 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix Dashboard</title>
 
-<title>MovieFlix Dashboard</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 
-<link rel="stylesheet"
-href="{{ url_for('static',filename='css/style.css') }}">
-
-<style>
-
-body{
-background:#141414;
-font-family:Arial,sans-serif;
-margin:0;
-padding:20px;
-color:white;
-}
-
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
-.movie-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-gap:20px;
-}
-
-.movie-card{
-background:#222;
-border-radius:10px;
-overflow:hidden;
-transition:.3s;
-}
-
-.movie-card:hover{
-transform:scale(1.05);
-}
-
-.movie-card img{
-width:100%;
-height:300px;
-object-fit:cover;
-}
-
-.movie-info{
-padding:10px;
-}
-
-.movie-info h3{
-margin:5px 0;
-}
-
-.movie-info p{
-margin:5px 0;
-font-size:14px;
-color:#ccc;
-}
-
-.watch-btn{
-width:100%;
-padding:10px;
-border:none;
-background:red;
-color:white;
-cursor:pointer;
-}
-
-.logout{
-padding:10px 20px;
-background:red;
-color:white;
-text-decoration:none;
-border-radius:5px;
-}
-
-</style>
+    <script src="{{ url_for('static', filename='js/script.js') }}"
+            defer></script>
 
 </head>
 
 <body>
 
-<div class="topbar">
+<div class="dashboard-page">
 
-<h1>
-Welcome {{ user }}
-</h1>
+    <!-- Navbar -->
 
-<a href="/logout" class="logout">
-Logout
-</a>
+    <nav class="navbar">
 
-</div>
+        <span class="brand">
+            Movie<span>Flix</span>
+        </span>
 
-<div class="movie-grid">
+        <div class="nav-right">
 
-{% for movie in movies %}
+            <span class="nav-user">
+                Hi, {{ user }}
+            </span>
 
-<div class="movie-card">
+            <button
+                class="btn-logout"
+                onclick="logout()">
 
-<img src="{{ movie.image }}"
-onerror="this.src='https://via.placeholder.com/300x450?text=MovieFlix'">
+                Logout
 
-<div class="movie-info">
+            </button>
 
-<h3>
-{{ movie.title }}
-</h3>
+        </div>
 
-<p>
-{{ movie.genre }}
-</p>
+    </nav>
 
-<p>
-{{ movie.language }}
-</p>
 
-<a href="/movie/{{ movie.id }}">
+    <!-- Categories -->
 
-<button class="watch-btn">
+    <div class="category-bar">
 
-Watch
+        <button
+            class="cat-btn active"
+            onclick="showCategory('all',this)">
 
-</button>
+            All
 
-</a>
+        </button>
 
-</div>
+        {% for cat in categories %}
 
-</div>
+        <button
+            class="cat-btn"
+            onclick="showCategory('{{ cat }}',this)">
 
-{% endfor %}
+            {{ cat }}
+
+        </button>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Movies -->
+
+    {% for cat in categories %}
+
+    <div class="movie-section"
+         id="{{ cat }}">
+
+        <h2 class="section-title">
+
+            {{ cat }}
+
+        </h2>
+
+        <div class="movie-grid">
+
+            {% for movie in movies %}
+
+                {% if movie["genre"] == cat %}
+
+                <a
+                    href="{{ url_for('movie',movie_id=movie['id']) }}"
+                    class="movie-card">
+
+                    <img
+                        src="{{ movie['image'] }}"
+                        alt="{{ movie['title'] }}">
+
+                    <div class="movie-card-info">
+
+                        <p class="movie-card-title">
+
+                            {{ movie["title"] }}
+
+                        </p>
+
+                        <p class="movie-card-meta">
+
+                            {{ movie["genre"] }}
+                            ·
+                            {{ movie["language"] }}
+
+                        </p>
+
+                    </div>
+
+                </a>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
 
 </div>
 

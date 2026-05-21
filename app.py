@@ -13,22 +13,31 @@ app.secret_key = "movieflix_secret"
 DATABASE = "/tmp/database.db" if os.environ.get("VERCEL") else "database.db"
 
 
+# ================= DATABASE =================
+
 def get_db():
+
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
+
     return conn
 
 
 def init_db():
+
     conn = get_db()
 
     conn.execute("""
+
         CREATE TABLE IF NOT EXISTS users(
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL
+
         )
+
     """)
 
     conn.commit()
@@ -37,9 +46,12 @@ def init_db():
 
 try:
     init_db()
+
 except:
     pass
 
+
+# ================= MOVIES =================
 
 MOVIES = [
 
@@ -105,6 +117,8 @@ MOVIES = [
 ]
 
 
+# ================= LOGIN =================
+
 @app.route("/",methods=["GET","POST"])
 def login():
 
@@ -115,36 +129,41 @@ def login():
         email=request.form["email"]
         password=request.form["password"]
 
-        try:
+        conn=get_db()
 
-            conn=get_db()
+        user=conn.execute(
 
-            user=conn.execute(
-                "SELECT * FROM users WHERE email=? AND password=?",
-                (email,password)
-            ).fetchone()
+            """
+            SELECT * FROM users
+            WHERE email=? AND password=?
+            """,
 
-            conn.close()
+            (email,password)
 
-            if user:
+        ).fetchone()
 
-                session["user"]=user["username"]
+        conn.close()
 
-                return redirect(
-                    url_for("dashboard")
-                )
+        if user:
 
-            error="Invalid credentials"
+            session["user"]=user["username"]
+            session["email"]=user["email"]
 
-        except Exception as e:
+            return redirect(
+                url_for("dashboard")
+            )
 
-            error=str(e)
+        else:
+
+            error="Invalid Email or Password"
 
     return render_template(
         "login.html",
         error=error
     )
 
+
+# ================= SIGNUP =================
 
 @app.route("/signup",methods=["GET","POST"])
 def signup():
@@ -162,32 +181,41 @@ def signup():
             conn=get_db()
 
             conn.execute(
+
                 """
                 INSERT INTO users
                 (username,email,password)
                 VALUES(?,?,?)
                 """,
-                (username,email,password)
+
+                (
+                    username,
+                    email,
+                    password
+                )
             )
 
             conn.commit()
             conn.close()
 
             session["user"]=username
+            session["email"]=email
 
             return redirect(
                 url_for("dashboard")
             )
 
-        except Exception as e:
+        except:
 
-            error=str(e)
+            error="Email already exists"
 
     return render_template(
         "signup.html",
         error=error
     )
 
+
+# ================= DASHBOARD =================
 
 @app.route("/dashboard")
 def dashboard():
@@ -198,11 +226,83 @@ def dashboard():
             url_for("login")
         )
 
-    return render_template(
-        "dashboard.html",
-        movies=MOVIES
+    categories=sorted(
+
+        set(
+
+            movie["genre"]
+
+            for movie in MOVIES
+
+        )
+
     )
 
+    return render_template(
+
+        "dashboard.html",
+
+        movies=MOVIES,
+        categories=categories,
+        user=session["user"]
+
+    )
+
+
+# ================= MOVIE PAGE =================
+
+@app.route("/movie/<int:movie_id>")
+def movie(movie_id):
+
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    movie=next(
+
+        (
+            m for m in MOVIES
+            if m["id"]==movie_id
+        ),
+
+        None
+
+    )
+
+    if movie is None:
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    return render_template(
+
+        "movie.html",
+
+        movie=movie
+
+    )
+
+
+# ================= PAYMENT =================
+
+@app.route("/payment")
+def payment():
+
+    if "user" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    return render_template(
+        "payment.html"
+    )
+
+
+# ================= LOGOUT =================
 
 @app.route("/logout")
 def logout():
@@ -215,4 +315,7 @@ def logout():
 
 
 if __name__=="__main__":
-    app.run(debug=True)
+
+    app.run(
+        debug=True
+    )
